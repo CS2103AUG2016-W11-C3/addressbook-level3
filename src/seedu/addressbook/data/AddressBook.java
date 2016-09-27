@@ -1,5 +1,6 @@
 package seedu.addressbook.data;
 
+import seedu.addressbook.commands.Command;
 import seedu.addressbook.data.person.*;
 import seedu.addressbook.data.person.UniquePersonList.*;
 import seedu.addressbook.data.tag.Tag;
@@ -19,6 +20,8 @@ public class AddressBook {
 
     private final UniquePersonList allPersons;
     private final UniqueTagList allTags; // can contain tags not attached to any person
+    
+    private final Stack<Command> commandHistory;
 
     public static AddressBook empty() {
         return new AddressBook();
@@ -30,6 +33,7 @@ public class AddressBook {
     public AddressBook() {
         allPersons = new UniquePersonList();
         allTags = new UniqueTagList();
+        commandHistory = new Stack<>();
     }
 
     /**
@@ -40,6 +44,8 @@ public class AddressBook {
      * @param tags external changes to this will not affect this address book
      */
     public AddressBook(UniquePersonList persons, UniqueTagList tags) {
+        this.commandHistory = new Stack<>();
+        
         this.allPersons = new UniquePersonList(persons);
         this.allTags = new UniqueTagList(tags);
         for (Person p : allPersons) {
@@ -143,6 +149,10 @@ public class AddressBook {
      */
     public UniqueTagList getAllTags() {
         return new UniqueTagList(allTags);
+    }
+    
+    public Stack<Command> getCommandHistory(){
+        return this.commandHistory;
     }
 
     @Override
