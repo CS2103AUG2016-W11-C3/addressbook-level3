@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import seedu.addressbook.commands.ExitCommand;
+import seedu.addressbook.commands.PreviousCommand;
 import seedu.addressbook.logic.Logic;
 import seedu.addressbook.commands.CommandResult;
 import seedu.addressbook.data.person.ReadOnlyPerson;
@@ -22,8 +23,10 @@ public class MainWindow {
 
     private Logic logic;
     private Stoppable mainApp;
+    private String prev;
 
     public MainWindow(){
+    	prev = "";
     }
 
     public void setLogic(Logic logic){
@@ -45,13 +48,16 @@ public class MainWindow {
     void onCommand(ActionEvent event) {
         try {
             String userCommandText = commandInput.getText();
+            clearCommandInput();
             CommandResult result = logic.execute(userCommandText);
             if(isExitCommand(result)){
                 exitApp();
                 return;
+            } else if (isPreviousCommand(result)) {
+            	setPrev();
             }
+            prev = userCommandText;
             displayResult(result);
-            clearCommandInput();
         } catch (Exception e) {
             display(e.getMessage());
             throw new RuntimeException(e);
@@ -61,7 +67,17 @@ public class MainWindow {
     private void exitApp() throws Exception {
         mainApp.stop();
     }
+    
+    private void setPrev() {
+    	commandInput.setText(prev);
+    }
 
+    /** Returns true of the result given is the result of an previous command */
+    private boolean isPreviousCommand(CommandResult result) {
+        return result.feedbackToUser.equals(PreviousCommand.MESSAGE_SUCCESS);
+    }
+
+    
     /** Returns true of the result given is the result of an exit command */
     private boolean isExitCommand(CommandResult result) {
         return result.feedbackToUser.equals(ExitCommand.MESSAGE_EXIT_ACKNOWEDGEMENT);
