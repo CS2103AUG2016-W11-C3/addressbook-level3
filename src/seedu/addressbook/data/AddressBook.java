@@ -21,7 +21,7 @@ public class AddressBook {
     private final UniquePersonList allPersons;
     private final UniqueTagList allTags; // can contain tags not attached to any person
     
-    private final Stack<Command> commandHistory;
+    private final Stack<Command> commandHistory; // contain all the command executed
 
     public static AddressBook empty() {
         return new AddressBook();

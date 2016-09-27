@@ -72,7 +72,9 @@ public class AddCommand extends Command implements Undoable{
     @Override
     public CommandResult undo() {
         try {
+            // remove the person that's previously added.
             addressBook.removePerson(toAdd);
+            
             return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
         } catch (UniquePersonList.PersonNotFoundException pne) {
             return new CommandResult(Messages.MESSAGE_PERSON_NOT_IN_ADDRESSBOOK);
