@@ -1,5 +1,6 @@
 package seedu.addressbook.commands;
 
+import seedu.addressbook.common.Messages;
 import seedu.addressbook.data.exception.IllegalValueException;
 import seedu.addressbook.data.person.*;
 import seedu.addressbook.data.tag.Tag;
@@ -11,7 +12,7 @@ import java.util.Set;
 /**
  * Adds a person to the address book.
  */
-public class AddCommand extends Command {
+public class AddCommand extends Command implements Undoable{
 
     public static final String COMMAND_WORD = "add";
 
@@ -22,6 +23,7 @@ public class AddCommand extends Command {
             + " John Doe p/98765432 e/johnd@gmail.com a/311, Clementi Ave 2, #02-25 t/friends t/owesMoney";
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";
+    public static final String MESSAGE_UNDO_SUCCESS = "[Undo Add Command] Person removed: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book";
 
     private final Person toAdd;
@@ -61,10 +63,24 @@ public class AddCommand extends Command {
     public CommandResult execute() {
         try {
             addressBook.addPerson(toAdd);
+            addressBook.getCommandHistory().push(this);
             return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
         } catch (UniquePersonList.DuplicatePersonException dpe) {
             return new CommandResult(MESSAGE_DUPLICATE_PERSON);
         }
     }
+
+    @Override
+    public CommandResult undo() {
+        try {
+            // remove the person that's previously added.
+            addressBook.removePerson(toAdd);
+            
+            return new CommandResult(String.format(MESSAGE_UNDO_SUCCESS, toAdd));
+        } catch (UniquePersonList.PersonNotFoundException pne) {
+            return new CommandResult(Messages.MESSAGE_PERSON_NOT_IN_ADDRESSBOOK);
+        }
+    }
+    
 
 }
